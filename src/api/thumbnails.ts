@@ -5,6 +5,7 @@ import { getVideo, updateVideo } from "../db/videos";
 import type { ApiConfig } from "../config";
 import type { BunRequest } from "bun";
 import { BadRequestError, NotFoundError, UserForbiddenError } from "./errors";
+import { randomBytes } from "crypto";
 
 type Thumbnail = {
     data: ArrayBuffer;
@@ -50,10 +51,12 @@ export async function handlerUploadThumbnail(cfg: ApiConfig, req: BunRequest) {
         throw new UserForbiddenError("You are not allowed to upload thumbnail");
     }
 
-    const filePath = join(cfg.assetsRoot, `${videoId}.${extension}`);
+    const fileName = `${randomBytes(32).toString("base64")}.${extension}`;
+
+    const filePath = join(cfg.assetsRoot, `${fileName}`);
     Bun.write(filePath, imageData);
 
-    video.thumbnailURL = `http://localhost:8091/assets/${videoId}.${extension}`;
+    video.thumbnailURL = `http://localhost:8091/assets/${fileName}`;
     updateVideo(cfg.db, video);
 
     respondWithJSON(200, video);
