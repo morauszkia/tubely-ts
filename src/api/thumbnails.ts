@@ -51,7 +51,8 @@ export async function handlerUploadThumbnail(cfg: ApiConfig, req: BunRequest) {
         throw new UserForbiddenError("You are not allowed to upload thumbnail");
     }
 
-    const fileName = `${randomBytes(32).toString("base64")}.${extension}`;
+    const fileName =
+        `${randomBytes(32).toString("hex")}.${extension}`;
 
     const filePath = join(cfg.assetsRoot, `${fileName}`);
     Bun.write(filePath, imageData);

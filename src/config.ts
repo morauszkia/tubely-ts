@@ -1,16 +1,18 @@
+import { s3, type S3Client } from "bun";
 import { newDatabase } from "./db/db";
 import type { Database } from "bun:sqlite";
 
 export type ApiConfig = {
-  db: Database;
-  jwtSecret: string;
-  platform: string;
-  filepathRoot: string;
-  assetsRoot: string;
-  s3Bucket: string;
-  s3Region: string;
-  s3CfDistribution: string;
-  port: string;
+    db: Database;
+    jwtSecret: string;
+    platform: string;
+    filepathRoot: string;
+    assetsRoot: string;
+    s3Bucket: string;
+    s3Region: string;
+    s3CfDistribution: string;
+    port: string;
+    s3Client: S3Client;
 };
 
 const pathToDB = envOrThrow("DB_PATH");
@@ -25,22 +27,25 @@ const port = envOrThrow("PORT");
 
 const db = newDatabase(pathToDB);
 
+const client = s3;
+
 export const cfg: ApiConfig = {
-  db: db,
-  jwtSecret: jwtSecret,
-  platform: platform,
-  filepathRoot: filepathRoot,
-  assetsRoot: assetsRoot,
-  s3Bucket: s3Bucket,
-  s3Region: s3Region,
-  s3CfDistribution: s3CfDistribution,
-  port: port,
+    db: db,
+    jwtSecret: jwtSecret,
+    platform: platform,
+    filepathRoot: filepathRoot,
+    assetsRoot: assetsRoot,
+    s3Bucket: s3Bucket,
+    s3Region: s3Region,
+    s3CfDistribution: s3CfDistribution,
+    port: port,
+    s3Client: client,
 };
 
 function envOrThrow(key: string) {
-  const envVar = process.env[key];
-  if (!envVar) {
-    throw new Error(`${key} must be set`);
-  }
-  return envVar;
+    const envVar = process.env[key];
+    if (!envVar) {
+        throw new Error(`${key} must be set`);
+    }
+    return envVar;
 }
